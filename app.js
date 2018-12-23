@@ -7,8 +7,11 @@ const fs = require('fs');
 const sqliteParser = require('sqlite-parser');
 const Database = require('better-sqlite3');
 
+var db;
+var db_schema;
+
 //==============================================================================
-//Fuctions
+//DB Fuctions
 
 function createDatabase(dbName){
   try{
@@ -46,8 +49,72 @@ function deleteDatabase(dbName){
   }
 }
 
+//---------------------------------
+
+function openDatabase(dbName){
+  try{
+    db = new Database(`database/database/${dbName}.db`);
+    db_schema = JSON.parse(fs.readFileSync(`database/database/${dbName}_schema.json`, 'utf8'));
+  }
+  catch(err){
+    console.log(err);
+  }
+}
+
+function closeDatabase(){
+  try{
+    db = undefined;
+    db_schema = undefined;
+  }
+  catch(err){
+    console.log(err);
+  }
+}
+
+//---------------------------------
+
+function selectRecords(tableName){
+  try{
+    let sql = `SELECT * FROM ${tableName}`;
+    let preparedSelect = db.prepare(sql);
+    let data = preparedSelect.all();
+    return {success: true, response: data};
+  }
+  catch(err){
+    return {success: false, response: err};
+  }
+}
+
+function insertRecords(tableName, values){
+  try{ //only a single prepared statement should be required
+
+  }
+  catch(err){
+    return {success: false, response: err}
+  }
+}
+
+function deleteRecords(tableName, pkIDs){
+  try{ //only a single prepared statement should be required
+
+  }
+  catch(err){
+    return {success: false, response: err}
+  }
+}
+
+function updateColumn(tableName, fieldName, values, pkIDs){
+  try{ //only a single prepared statement should be required, then insert values with corresponding pkIDs
+
+  }
+  catch(err){
+    return {success: false, response: err}
+  }
+}
+
 //==============================================================================
 //Exec
 
-deleteDatabase("chinook");
-createDatabase("chinook");
+openDatabase("chinook");
+
+closeDatabase();
