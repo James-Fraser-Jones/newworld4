@@ -1,0 +1,23 @@
+{
+  "name": "newworld4",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/smudgecat123/newworld4.git"
+  },
+  "author": "James Fraser-Jones",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/smudgecat123/newworld4/issues"
+  },
+  "homepage": "https://github.com/smudgecat123/newworld4#readme",
+  "dependencies": {
+    "better-sqlite3": "^5.2.1",
+    "sqlite-parser": "^1.0.1"
+  }
+}
