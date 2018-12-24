@@ -3,6 +3,9 @@
 //==============================================================================
 //Global references and variables
 
+//seem to need this to be able to install better-sqlite:
+//npm config set unsafe-perm=true
+
 const fs = require('fs');
 const sqliteParser = require('sqlite-parser');
 const Database = require('better-sqlite3');
@@ -73,48 +76,43 @@ function closeDatabase(){
 
 //---------------------------------
 
-function selectRecords(tableName){
-  try{
-    let sql = `SELECT * FROM ${tableName}`;
-    let preparedSelect = db.prepare(sql);
-    let data = preparedSelect.all();
-    return {success: true, response: data};
-  }
-  catch(err){
-    return {success: false, response: err};
-  }
-}
+/*
+Choice of how to design this database API is difficult because there are many different options
+which vary in terms of simplicity, performance, safety, flexibility etc...
 
-function insertRecords(tableName, values){
-  try{ //only a single prepared statement should be required
+Ultimately, I can't concretely know what we actually need because it depends entirely on the capabilities
+of the editing table that we want support.
 
-  }
-  catch(err){
-    return {success: false, response: err}
-  }
-}
+Some things I have kept in mind:
+-Don't use exec, use prepare and get/all/run.
+-Bind all sql values into statement instead of including them manually to prevent sql injection
+-For all other variables which can't be bound to prepared statements (e.g. table and field names),
+use a lookup to the schema json to confirm their identity before executing any sql.
+-For the sake of performance, attempt to use as few prepared statements and schema lookups as possible.
+-This means designing your functions to execute accross many records rather than just one and passing around
+of prepared statement once it has been created once.
+-Insert statements automatically make use of default values. Also there is a special insert statement for only
+inserting default values/nulls for all fields.
 
-function deleteRecords(tableName, pkIDs){
-  try{ //only a single prepared statement should be required
+Simple:
 
-  }
-  catch(err){
-    return {success: false, response: err}
-  }
-}
+1. SELECT * FROM table                                                          (get table)
+2. SELECT * FROM table WHERE primarykey = pkID                                  (get row of table)
+3. SELECT field FROM table WHERE primarykey = pkID                              (get cell of table)
 
-function updateColumn(tableName, fieldName, values, pkIDs){
-  try{ //only a single prepared statement should be required, then insert values with corresponding pkIDs
+4. INSERT INTO table VALUES(values)                                             (for creating new row with all data)
+5. INSERT INTO table DEFAULT VALUES                                             (for creating a new row)
 
-  }
-  catch(err){
-    return {success: false, response: err}
-  }
-}
+More complicated:
+
+6. UPDATE table SET field = value WHERE PRIMARYKEY = pkID
+7. INSERT INTO table(fields) VALUES (values)                                    (for creating row with some/all data)
+*/
 
 //==============================================================================
 //Exec
 
+deleteDatabase("chinook");
+createDatabase("chinook");
 openDatabase("chinook");
-
 closeDatabase();
